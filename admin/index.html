@@ -8,7 +8,13 @@
 </head>
 <body>
   <script>
-    CMS.init();
+    CMS.init({
+      config: {
+        load_config_file: true,
+        // Explicitly tell it where the config is
+        config_file: "/admin/config.yml"
+      }
+    });
   </script>
 </body>
 </html>
