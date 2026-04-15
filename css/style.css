@@ -1,4 +1,4 @@
-/* css/style.css - Main File */
+/* css/style.css - Main Global Control File */
 
 @import url('header.css');
 @import url('footer.css');
@@ -6,16 +6,69 @@
 @import url('post.css');
 @import url('components.css');
 
-/* Global Reset & Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ====================== GLOBAL DARK MODE ====================== */
+:root {
+  --primary-pink: #e83e6d;
+  --text: #2d2d2d;
+  --light-text: #555;
+  --bg: #fffaf8;
+  --card-bg: #ffffff;
+  --shadow: 0 10px 30px rgba(232, 62, 109, 0.18);
 }
 
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --text: #f0e0e6;
+  --light-text: #c9b0b8;
+  --bg: #1a0f12;
+  --card-bg: #2a1f24;
+  --shadow: 0 10px 30px rgba(232, 62, 109, 0.35);
+}
+
+/* Apply Dark Mode to Body */
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #fffaf8;
-  color: #2d2d2d;
-  line-height: 1.7;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Make sure cards and posts respect dark mode */
+.post-card,
+.post-content article {
+  background: var(--card-bg) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Header Dark Mode Override */
+[data-theme="dark"] header {
+  background: #c22e55;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: rgba(255,255,255,0.25);
+  border: none;
+  color: white;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Reading Time */
+.reading-time {
+  color: var(--primary-pink);
+  font-size: 0.95rem;
+  margin: 8px 0 15px;
+}
+
+/* Back to Home Button */
+.back-to-home {
+  display: inline-block;
+  margin: 30px 20px;
+  color: var(--primary-pink);
+  text-decoration: none;
+  font-weight: 600;
 }
