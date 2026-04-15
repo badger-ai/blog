@@ -1,4 +1,4 @@
-// js/main.js - Complete Version with Dark Mode
+// js/main.js - Fixed Mobile Dark Mode + Better Touch Support
 
 // ==================== DARK MODE TOGGLE ====================
 const themeToggle = document.getElementById('themeToggle');
@@ -8,21 +8,29 @@ function initDarkMode() {
 
   const savedTheme = localStorage.getItem('theme');
 
-  // Apply saved theme
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Click handler
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    localStorage.setItem('theme', currentTheme);
-    
-    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  // Better click handler for both desktop and mobile
+  themeToggle.addEventListener('click', toggleTheme);
+  themeToggle.addEventListener('touchend', (e) => {
+    e.preventDefault();        // Prevent ghost clicks
+    toggleTheme();
   });
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('theme', currentTheme);
+  
+  // Update button icon
+  if (themeToggle) {
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  }
 }
 
 // ==================== HAMBURGER MENU ====================
@@ -32,16 +40,18 @@ function initHamburger() {
 
   if (hamburger && mobileMenu) {
     hamburger.addEventListener('click', () => {
-      if (mobileMenu.style.display === 'flex') {
-        mobileMenu.style.display = 'none';
-      } else {
-        mobileMenu.style.display = 'flex';
-      }
+      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
+    });
+
+    // Also support touch on mobile
+    hamburger.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
     });
   }
 }
 
-// ==================== RENDER POSTS ON HOMEPAGE ====================
+// ==================== RENDER POSTS ====================
 const posts = [
   {
     title: "My First Soft Pink Day",
@@ -76,20 +86,9 @@ function renderPosts() {
   `).join('');
 }
 
-// ==================== SCROLL ANIMATION ====================
-function animateCards() {
-  const cards = document.querySelectorAll('.post-card');
-  cards.forEach((card, index) => {
-    setTimeout(() => {
-      card.classList.add('visible');
-    }, index * 150);
-  });
-}
-
-// ==================== INITIALIZE EVERYTHING ====================
+// ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
   renderPosts();
   initDarkMode();
   initHamburger();
-  setTimeout(animateCards, 300);
 });
