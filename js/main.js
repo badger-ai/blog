@@ -1,12 +1,54 @@
-// js/main.js
+// js/main.js - Complete Version with Dark Mode
 
+// ==================== DARK MODE TOGGLE ====================
+const themeToggle = document.getElementById('themeToggle');
+
+function initDarkMode() {
+  if (!themeToggle) return;
+
+  const savedTheme = localStorage.getItem('theme');
+
+  // Apply saved theme
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  }
+
+  // Click handler
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  });
+}
+
+// ==================== HAMBURGER MENU ====================
+function initHamburger() {
+  const hamburger = document.querySelector('.hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', () => {
+      if (mobileMenu.style.display === 'flex') {
+        mobileMenu.style.display = 'none';
+      } else {
+        mobileMenu.style.display = 'flex';
+      }
+    });
+  }
+}
+
+// ==================== RENDER POSTS ON HOMEPAGE ====================
 const posts = [
   {
     title: "My First Soft Pink Day",
     date: "April 14, 2026",
     excerpt: "A peaceful beginning filled with soft colors and gentle thoughts.",
     slug: "first-post",
-    image: "images/R.jpg"   // Change this to your image name
+    image: "images/R.jpg"
   },
   {
     title: "The Beauty of Slow Living",
@@ -19,7 +61,8 @@ const posts = [
 
 function renderPosts() {
   const container = document.getElementById('posts-container');
-  
+  if (!container) return;
+
   container.innerHTML = posts.map(post => `
     <div class="post-card">
       ${post.image ? `<img src="${post.image}" alt="${post.title}">` : ''}
@@ -33,8 +76,8 @@ function renderPosts() {
   `).join('');
 }
 
-// Scroll Animation for Cards
-function animateOnScroll() {
+// ==================== SCROLL ANIMATION ====================
+function animateCards() {
   const cards = document.querySelectorAll('.post-card');
   cards.forEach((card, index) => {
     setTimeout(() => {
@@ -43,20 +86,10 @@ function animateOnScroll() {
   });
 }
 
-// Hamburger Menu
-const hamburger = document.querySelector('.hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-
-hamburger.addEventListener('click', () => {
-  if (mobileMenu.style.display === 'flex') {
-    mobileMenu.style.display = 'none';
-  } else {
-    mobileMenu.style.display = 'flex';
-  }
-});
-
-// Initialize everything
+// ==================== INITIALIZE EVERYTHING ====================
 document.addEventListener('DOMContentLoaded', () => {
   renderPosts();
-  setTimeout(animateOnScroll, 300);   // Slight delay for smooth effect
+  initDarkMode();
+  initHamburger();
+  setTimeout(animateCards, 300);
 });
