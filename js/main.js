@@ -1,38 +1,36 @@
-// js/main.js - Fixed & Stable Version (Works on iPhone Chrome + Safari)
+// js/main.js - Fixed Mobile Dark Mode + Better Touch Support
 
-console.log("✅ main.js loaded successfully");
-
-// ==================== DARK MODE ====================
+// ==================== DARK MODE TOGGLE ====================
 const themeToggle = document.getElementById('themeToggle');
 
 function initDarkMode() {
-  if (!themeToggle) {
-    console.log("Theme toggle button not found");
-    return;
-  }
+  if (!themeToggle) return;
 
-  // Load saved theme
   const savedTheme = localStorage.getItem('theme');
+
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Toggle function
-  function toggleTheme(e) {
-    if (e) e.preventDefault();
-    
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-  }
-
-  // Add both click and touch events
+  // Better click handler for both desktop and mobile
   themeToggle.addEventListener('click', toggleTheme);
-  themeToggle.addEventListener('touchend', toggleTheme);
+  themeToggle.addEventListener('touchend', (e) => {
+    e.preventDefault();        // Prevent ghost clicks
+    toggleTheme();
+  });
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('theme', currentTheme);
+  
+  // Update button icon
+  if (themeToggle) {
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  }
 }
 
 // ==================== HAMBURGER MENU ====================
@@ -41,13 +39,15 @@ function initHamburger() {
   const mobileMenu = document.getElementById('mobileMenu');
 
   if (hamburger && mobileMenu) {
-    const toggleMenu = (e) => {
-      if (e) e.preventDefault();
+    hamburger.addEventListener('click', () => {
       mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
-    };
+    });
 
-    hamburger.addEventListener('click', toggleMenu);
-    hamburger.addEventListener('touchend', toggleMenu);
+    // Also support touch on mobile
+    hamburger.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
+    });
   }
 }
 
@@ -71,10 +71,7 @@ const posts = [
 
 function renderPosts() {
   const container = document.getElementById('posts-container');
-  if (!container) {
-    console.log("⚠️ posts-container not found");
-    return;
-  }
+  if (!container) return;
 
   container.innerHTML = posts.map(post => `
     <div class="post-card">
@@ -87,13 +84,10 @@ function renderPosts() {
       </div>
     </div>
   `).join('');
-
-  console.log("✅ Posts rendered successfully");
 }
 
-// ==================== START EVERYTHING ====================
+// ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("📱 Page fully loaded");
   renderPosts();
   initDarkMode();
   initHamburger();
