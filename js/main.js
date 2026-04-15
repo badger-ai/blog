@@ -1,57 +1,45 @@
-// js/main.js - Fixed Mobile Dark Mode + Better Touch Support
+// js/main.js - Working Version + Dark Mode
 
-// ==================== DARK MODE TOGGLE ====================
+console.log("✅ main.js loaded successfully");
+
+// ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
 
-function initDarkMode() {
-  if (!themeToggle) return;
-
+if (themeToggle) {
+  // Load saved theme
   const savedTheme = localStorage.getItem('theme');
-
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Better click handler for both desktop and mobile
+  // Toggle function
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', current);
+    localStorage.setItem('theme', current);
+    themeToggle.textContent = current === 'dark' ? '☀️' : '🌙';
+  }
+
   themeToggle.addEventListener('click', toggleTheme);
   themeToggle.addEventListener('touchend', (e) => {
-    e.preventDefault();        // Prevent ghost clicks
+    e.preventDefault();
     toggleTheme();
   });
 }
 
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  localStorage.setItem('theme', currentTheme);
-  
-  // Update button icon
-  if (themeToggle) {
-    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-  }
-}
-
 // ==================== HAMBURGER MENU ====================
-function initHamburger() {
-  const hamburger = document.querySelector('.hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+const hamburger = document.querySelector('.hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
 
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', () => {
-      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
-    });
-
-    // Also support touch on mobile
-    hamburger.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
-    });
-  }
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener('click', () => {
+    mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
+  });
 }
 
-// ==================== RENDER POSTS ====================
+// ==================== YOUR POSTS ====================
 const posts = [
   {
     title: "My First Soft Pink Day",
@@ -67,6 +55,7 @@ const posts = [
     slug: "slow-living",
     image: "images/S.jpg"
   }
+  // Add new posts here easily:
 ];
 
 function renderPosts() {
@@ -86,9 +75,18 @@ function renderPosts() {
   `).join('');
 }
 
-// ==================== INITIALIZE ====================
+// Scroll Animation
+function animateOnScroll() {
+  const cards = document.querySelectorAll('.post-card');
+  cards.forEach((card, index) => {
+    setTimeout(() => {
+      card.classList.add('visible');
+    }, index * 150);
+  });
+}
+
+// Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
   renderPosts();
-  initDarkMode();
-  initHamburger();
+  setTimeout(animateOnScroll, 300);
 });
