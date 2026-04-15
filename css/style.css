@@ -72,3 +72,17 @@ body {
   text-decoration: none;
   font-weight: 600;
 }
+
+/* Safari & Mobile Fixes */
+.theme-toggle {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* Fix for iOS Safari */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .theme-toggle {
+    font-size: 1.6rem;
+  }
+}
