@@ -1,4 +1,4 @@
-// js/main.js - Fixed Sanity Fetch
+// js/main.js - Final Clean Sanity Version
 
 console.log("✅ main.js loaded - Sanity only");
 
@@ -33,7 +33,7 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== FETCH POSTS FROM SANITY ====================
+// ==================== LOAD POSTS FROM SANITY ====================
 async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
@@ -44,6 +44,7 @@ async function loadPostsFromSanity() {
     const PROJECT_ID = 'bw8xzmsp';
     const DATASET = 'production';
 
+    // Correctly defined QUERY variable
     const QUERY = `*[_type == "post"] | order(publishedAt desc) {
       title,
       slug,
