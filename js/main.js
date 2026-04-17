@@ -1,6 +1,6 @@
-// js/main.js - Simple Sanity Pull
+// js/main.js - Sanity Only (No Old Hardcoded Posts)
 
-console.log("✅ main.js loaded - trying to pull posts from Sanity");
+console.log("✅ main.js loaded - Sanity only");
 
 // ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
@@ -33,8 +33,8 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== PULL POSTS FROM SANITY ====================
-async function loadPosts() {
+// ==================== FETCH POSTS FROM SANITY ONLY ====================
+async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
 
@@ -52,16 +52,16 @@ async function loadPosts() {
       "imageUrl": image.asset->url
     }`;
 
-    const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+    const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
 
     const response = await fetch(url);
     const data = await response.json();
     const posts = data.result || [];
 
-    console.log("Sanity returned these posts:", posts);
+    console.log("Sanity returned posts:", posts);
 
     if (posts.length === 0) {
-      container.innerHTML = '<p>No posts found in Sanity. Create and publish some posts in Sanity Studio.</p>';
+      container.innerHTML = '<p>No posts yet. Create and publish some in Sanity Studio.</p>';
       return;
     }
 
@@ -78,10 +78,12 @@ async function loadPosts() {
     `).join('');
 
   } catch (error) {
-    console.error("Error fetching from Sanity:", error);
-    container.innerHTML = `<p>Could not load posts from Sanity.<br>Error: ${error.message}</p>`;
+    console.error("Sanity fetch error:", error);
+    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
   }
 }
 
-// Run when page loads
-document.addEventListener('DOMContentLoaded', loadPosts);
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  loadPostsFromSanity();
+});
