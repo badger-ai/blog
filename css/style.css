@@ -16,7 +16,6 @@
   --shadow: 0 10px 30px rgba(232, 62, 109, 0.18);
 }
 
-/* Dark Mode Variables */
 [data-theme="dark"] {
   --text: #f0e0e6;
   --light-text: #c9b0b8;
@@ -25,21 +24,20 @@
   --shadow: 0 10px 30px rgba(232, 62, 109, 0.35);
 }
 
-/* Apply Dark Mode to Body */
 body {
   background: var(--bg);
   color: var(--text);
   transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* Make sure cards and posts respect dark mode */
+/* Cards and posts respect dark mode */
 .post-card,
 .post-content article {
   background: var(--card-bg) !important;
   box-shadow: var(--shadow) !important;
 }
 
-/* Header Dark Mode Override */
+/* Header Dark Mode */
 [data-theme="dark"] header {
   background: #c22e55;
 }
@@ -55,6 +53,16 @@ body {
   font-size: 1.5rem;
   cursor: pointer;
   margin-left: 10px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* Mobile fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .theme-toggle {
+    font-size: 1.6rem;
+  }
 }
 
 /* Reading Time */
@@ -64,25 +72,11 @@ body {
   margin: 8px 0 15px;
 }
 
-/* Back to Home Button */
+/* Back to Home */
 .back-to-home {
   display: inline-block;
   margin: 30px 20px;
   color: var(--primary-pink);
   text-decoration: none;
   font-weight: 600;
-}
-
-/* Safari & Mobile Fixes */
-.theme-toggle {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  user-select: none;
-}
-
-/* Fix for iOS Safari */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .theme-toggle {
-    font-size: 1.6rem;
-  }
 }
