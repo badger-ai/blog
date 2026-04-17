@@ -1,6 +1,6 @@
-// js/main.js - Connected to Sanity
+// js/main.js - Sanity Fetch with Better Debugging
 
-console.log("✅ main.js loaded - fetching from Sanity");
+console.log("✅ main.js loaded - trying to fetch from Sanity");
 
 // ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
@@ -38,10 +38,12 @@ async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
 
-  container.innerHTML = '<p>Loading posts...</p>';
+  container.innerHTML = '<p>Loading posts from Sanity...</p>';
 
   try {
-    const query = `*[_type == "post"] | order(publishedAt desc) {
+    const PROJECT_ID = 'bw8xzmsp';
+    const DATASET = 'production';
+    const QUERY = `*[_type == "post"] | order(publishedAt desc) {
       title,
       slug,
       publishedAt,
@@ -49,10 +51,20 @@ async function loadPostsFromSanity() {
       "imageUrl": image.asset->url
     }`;
 
-    // Replace with your actual Sanity client setup
-    const posts = await fetch('https://bw8xzmsp.api.sanity.io/v2024-04-17/data/query/production?query=' + encodeURIComponent(query))
-      .then(res => res.json())
-      .then(data => data.result);
+    const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
+
+    console.log("Fetching from:", url);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const posts = data.result || [];
+
+    console.log("Posts received from Sanity:", posts);
 
     if (posts.length === 0) {
       container.innerHTML = '<p>No posts yet. Create some in Sanity Studio.</p>';
@@ -72,8 +84,12 @@ async function loadPostsFromSanity() {
     `).join('');
 
   } catch (error) {
-    console.error("Failed to load posts from Sanity:", error);
-    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
+    console.error("Sanity fetch error:", error);
+    container.innerHTML = `
+      <p>Could not load posts from Sanity.</p>
+      <p style="color:red;">Error: ${error.message}</p>
+      <p>Make sure you have created posts in Sanity Studio and the Project ID is correct.</p>
+    `;
   }
 }
 
