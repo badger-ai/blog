@@ -54,29 +54,25 @@ async function loadPostsFromSanity() {
     const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
 
     const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
     const data = await response.json();
     const posts = data.result || [];
 
-    console.log("Sanity returned posts:", posts);   // This will help us debug
+    console.log("Posts received from Sanity:", posts);
 
     if (posts.length === 0) {
-      container.innerHTML = '<p>No published posts found in Sanity. Make sure they are published.</p>';
+      container.innerHTML = '<p>No posts found.</p>';
       return;
     }
 
+    // Fixed rendering with better null checks
     container.innerHTML = posts.map(post => `
       <div class="post-card">
         ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}">` : ''}
         <div class="card-content">
           <h3>${post.title}</h3>
           <p class="date">${new Date(post.publishedAt).toLocaleDateString()}</p>
-          <p class="excerpt">${post.excerpt || ''}</p>
-          <a href="posts/${post.slug.current}.html" class="read-more">Read More →</a>
+          <p class="excerpt">${post.excerpt || 'No excerpt'}</p>
+          <a href="posts/${post.slug?.current || post.slug}.html" class="read-more">Read More →</a>
         </div>
       </div>
     `).join('');
