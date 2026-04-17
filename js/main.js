@@ -1,6 +1,6 @@
-// js/main.js - Stable Version with Dark Mode
+// js/main.js - Simple Sanity Integration
 
-console.log("✅ main.js loaded successfully");
+console.log("✅ main.js loaded - fetching from Sanity");
 
 // ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
@@ -33,53 +33,55 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== YOUR POSTS ====================
-const posts = [
-  {
-    title: "My First Soft Pink Day",
-    date: "April 14, 2026",
-    excerpt: "A peaceful beginning filled with soft colors and gentle thoughts.",
-    slug: "first-post",
-    image: "images/R.jpg"
-  },
-  {
-    title: "The Beauty of Slow Living",
-    date: "April 12, 2026",
-    excerpt: "Learning to enjoy every small moment in this fast world.",
-    slug: "slow-living",
-    image: "images/S.jpg"
-  }
-];
-
-function renderPosts() {
+// ==================== FETCH POSTS FROM SANITY ====================
+async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
 
-  container.innerHTML = posts.map(post => `
-    <div class="post-card">
-      ${post.image ? `<img src="${post.image}" alt="${post.title}">` : ''}
-      <div class="card-content">
-        <h3>${post.title}</h3>
-        <p class="date">${post.date}</p>
-        <p class="excerpt">${post.excerpt}</p>
-        <a href="posts/${post.slug}.html" class="read-more">Read More →</a>
-      </div>
-    </div>
-  `).join('');
-}
+  container.innerHTML = '<p>Loading posts from Sanity...</p>';
 
-// Scroll Animation
-function animateOnScroll() {
-  const cards = document.querySelectorAll('.post-card');
-  cards.forEach((card, index) => {
-    setTimeout(() => {
-      card.classList.add('visible');
-    }, index * 150);
-  });
+  try {
+    const PROJECT_ID = 'bw8xzmsp';
+    const DATASET = 'production';
+
+    const query = `*[_type == "post"] | order(publishedAt desc) {
+      title,
+      slug,
+      publishedAt,
+      excerpt,
+      "imageUrl": image.asset->url
+    }`;
+
+    const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+    const posts = data.result || [];
+
+    if (posts.length === 0) {
+      container.innerHTML = '<p>No posts yet. Create some in Sanity Studio.</p>';
+      return;
+    }
+
+    container.innerHTML = posts.map(post => `
+      <div class="post-card">
+        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}">` : ''}
+        <div class="card-content">
+          <h3>${post.title}</h3>
+          <p class="date">${new Date(post.publishedAt).toLocaleDateString()}</p>
+          <p class="excerpt">${post.excerpt || ''}</p>
+          <a href="posts/${post.slug.current}.html" class="read-more">Read More →</a>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (error) {
+    console.error("Sanity fetch error:", error);
+    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
+  }
 }
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  renderPosts();
-  setTimeout(animateOnScroll, 300);
+  loadPostsFromSanity();
 });
