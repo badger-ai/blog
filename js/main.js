@@ -1,25 +1,20 @@
-// js/main.js - Fixed Dark Mode + Sanity Posts
+// js/main.js - Clean & Stable Version
 
-console.log("✅ main.js loaded");
+console.log("✅ main.js loaded successfully");
 
-// ==================== DARK MODE ====================
+// ==================== DARK MODE (Fixed for Mobile) ====================
 const themeToggle = document.getElementById('themeToggle');
 
-function initDarkMode() {
-  if (!themeToggle) {
-    console.warn("Theme toggle button not found");
-    return;
-  }
-
-  // Load saved theme
+if (themeToggle) {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Toggle function
-  function toggleTheme() {
+  function toggleTheme(e) {
+    if (e) e.preventDefault();
+
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
 
@@ -28,29 +23,22 @@ function initDarkMode() {
     themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Add listeners
   themeToggle.addEventListener('click', toggleTheme);
-  themeToggle.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    toggleTheme();
-  });
+  themeToggle.addEventListener('touchend', toggleTheme);
 }
 
 // ==================== HAMBURGER MENU ====================
-function initHamburger() {
-  const hamburger = document.querySelector('.hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+const hamburger = document.querySelector('.hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
 
-  if (hamburger && mobileMenu) {
-    const toggleMenu = () => {
-      mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
-    };
-    hamburger.addEventListener('click', toggleMenu);
-    hamburger.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      toggleMenu();
-    });
-  }
+if (hamburger && mobileMenu) {
+  const toggleMenu = (e) => {
+    if (e) e.preventDefault();
+    mobileMenu.style.display = (mobileMenu.style.display === 'flex') ? 'none' : 'flex';
+  };
+
+  hamburger.addEventListener('click', toggleMenu);
+  hamburger.addEventListener('touchend', toggleMenu);
 }
 
 // ==================== FETCH POSTS FROM SANITY ====================
@@ -100,9 +88,7 @@ async function loadPostsFromSanity() {
   }
 }
 
-// ==================== INITIALIZE ====================
+// Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
   loadPostsFromSanity();
-  initDarkMode();
-  initHamburger();
 });
