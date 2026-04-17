@@ -53,21 +53,19 @@ async function loadPostsFromSanity() {
 
     const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
 
-    console.log("Fetching from:", url);
-
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const data = await response.json();
     const posts = data.result || [];
 
-    console.log("Posts received from Sanity:", posts);
+    console.log("Sanity returned posts:", posts);   // This will help us debug
 
     if (posts.length === 0) {
-      container.innerHTML = '<p>No posts yet. Create some in Sanity Studio.</p>';
+      container.innerHTML = '<p>No published posts found in Sanity. Make sure they are published.</p>';
       return;
     }
 
@@ -85,15 +83,6 @@ async function loadPostsFromSanity() {
 
   } catch (error) {
     console.error("Sanity fetch error:", error);
-    container.innerHTML = `
-      <p>Could not load posts from Sanity.</p>
-      <p style="color:red;">Error: ${error.message}</p>
-      <p>Make sure you have created posts in Sanity Studio and the Project ID is correct.</p>
-    `;
+    container.innerHTML = `<p>Could not load posts.<br>Error: ${error.message}</p>`;
   }
 }
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  loadPostsFromSanity();
-});
