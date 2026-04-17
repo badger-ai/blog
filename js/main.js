@@ -1,4 +1,4 @@
-// js/main.js - Sanity Only (No Old Hardcoded Posts)
+// js/main.js - Sanity Only (No Old Posts)
 
 console.log("✅ main.js loaded - Sanity only");
 
@@ -33,7 +33,7 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== FETCH POSTS FROM SANITY ONLY ====================
+// ==================== LOAD POSTS FROM SANITY ONLY ====================
 async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
@@ -58,7 +58,7 @@ async function loadPostsFromSanity() {
     const data = await response.json();
     const posts = data.result || [];
 
-    console.log("Sanity returned posts:", posts);
+    console.log("Sanity returned:", posts);
 
     if (posts.length === 0) {
       container.innerHTML = '<p>No posts yet. Create and publish some in Sanity Studio.</p>';
