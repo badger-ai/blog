@@ -1,32 +1,26 @@
-// js/main.js - Working Version + Dark Mode
+// js/main.js - Connected to Sanity
 
-console.log("✅ main.js loaded successfully");
+console.log("✅ main.js loaded - fetching from Sanity");
 
 // ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
 
 if (themeToggle) {
-  // Load saved theme
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
   }
 
-  // Toggle function
   function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    
     document.documentElement.setAttribute('data-theme', current);
     localStorage.setItem('theme', current);
     themeToggle.textContent = current === 'dark' ? '☀️' : '🌙';
   }
 
   themeToggle.addEventListener('click', toggleTheme);
-  themeToggle.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    toggleTheme();
-  });
+  themeToggle.addEventListener('touchend', toggleTheme);
 }
 
 // ==================== HAMBURGER MENU ====================
@@ -39,54 +33,51 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== YOUR POSTS ====================
-const posts = [
-  {
-    title: "My First Soft Pink Day",
-    date: "April 14, 2026",
-    excerpt: "A peaceful beginning filled with soft colors and gentle thoughts.",
-    slug: "first-post",
-    image: "images/R.jpg"
-  },
-  {
-    title: "The Beauty of Slow Living",
-    date: "April 12, 2026",
-    excerpt: "Learning to enjoy every small moment in this fast world.",
-    slug: "slow-living",
-    image: "images/S.jpg"
-  }
-  // Add new posts here easily:
-];
-
-function renderPosts() {
+// ==================== FETCH POSTS FROM SANITY ====================
+async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
 
-  container.innerHTML = posts.map(post => `
-    <div class="post-card">
-      ${post.image ? `<img src="${post.image}" alt="${post.title}">` : ''}
-      <div class="card-content">
-        <h3>${post.title}</h3>
-        <p class="date">${post.date}</p>
-        <p class="excerpt">${post.excerpt}</p>
-        <a href="posts/${post.slug}.html" class="read-more">Read More →</a>
+  container.innerHTML = '<p>Loading posts...</p>';
+
+  try {
+    const query = `*[_type == "post"] | order(publishedAt desc) {
+      title,
+      slug,
+      publishedAt,
+      excerpt,
+      "imageUrl": image.asset->url
+    }`;
+
+    // Replace with your actual Sanity client setup
+    const posts = await fetch('https://bw8xzmsp.api.sanity.io/v2024-04-17/data/query/production?query=' + encodeURIComponent(query))
+      .then(res => res.json())
+      .then(data => data.result);
+
+    if (posts.length === 0) {
+      container.innerHTML = '<p>No posts yet. Create some in Sanity Studio.</p>';
+      return;
+    }
+
+    container.innerHTML = posts.map(post => `
+      <div class="post-card">
+        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${post.title}">` : ''}
+        <div class="card-content">
+          <h3>${post.title}</h3>
+          <p class="date">${new Date(post.publishedAt).toLocaleDateString()}</p>
+          <p class="excerpt">${post.excerpt || ''}</p>
+          <a href="posts/${post.slug.current}.html" class="read-more">Read More →</a>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+
+  } catch (error) {
+    console.error("Failed to load posts from Sanity:", error);
+    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
+  }
 }
 
-// Scroll Animation
-function animateOnScroll() {
-  const cards = document.querySelectorAll('.post-card');
-  cards.forEach((card, index) => {
-    setTimeout(() => {
-      card.classList.add('visible');
-    }, index * 150);
-  });
-}
-
-// Initialize everything
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  renderPosts();
-  setTimeout(animateOnScroll, 300);
+  loadPostsFromSanity();
 });
