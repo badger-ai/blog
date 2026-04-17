@@ -1,6 +1,6 @@
-// js/main.js - Simple Sanity Integration
+// js/main.js - Simple Sanity Pull
 
-console.log("✅ main.js loaded - fetching from Sanity");
+console.log("✅ main.js loaded - trying to pull posts from Sanity");
 
 // ==================== DARK MODE ====================
 const themeToggle = document.getElementById('themeToggle');
@@ -33,8 +33,8 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== FETCH POSTS FROM SANITY ====================
-async function loadPostsFromSanity() {
+// ==================== PULL POSTS FROM SANITY ====================
+async function loadPosts() {
   const container = document.getElementById('posts-container');
   if (!container) return;
 
@@ -58,8 +58,10 @@ async function loadPostsFromSanity() {
     const data = await response.json();
     const posts = data.result || [];
 
+    console.log("Sanity returned these posts:", posts);
+
     if (posts.length === 0) {
-      container.innerHTML = '<p>No posts yet. Create some in Sanity Studio.</p>';
+      container.innerHTML = '<p>No posts found in Sanity. Create and publish some posts in Sanity Studio.</p>';
       return;
     }
 
@@ -76,12 +78,10 @@ async function loadPostsFromSanity() {
     `).join('');
 
   } catch (error) {
-    console.error("Sanity fetch error:", error);
-    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
+    console.error("Error fetching from Sanity:", error);
+    container.innerHTML = `<p>Could not load posts from Sanity.<br>Error: ${error.message}</p>`;
   }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  loadPostsFromSanity();
-});
+// Run when page loads
+document.addEventListener('DOMContentLoaded', loadPosts);
