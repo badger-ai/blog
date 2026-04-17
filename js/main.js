@@ -1,4 +1,4 @@
-// js/main.js - Sanity Only (No Old Posts)
+// js/main.js - Fixed Sanity Fetch
 
 console.log("✅ main.js loaded - Sanity only");
 
@@ -33,7 +33,7 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ==================== LOAD POSTS FROM SANITY ONLY ====================
+// ==================== FETCH POSTS FROM SANITY ====================
 async function loadPostsFromSanity() {
   const container = document.getElementById('posts-container');
   if (!container) return;
@@ -44,7 +44,7 @@ async function loadPostsFromSanity() {
     const PROJECT_ID = 'bw8xzmsp';
     const DATASET = 'production';
 
-    const query = `*[_type == "post"] | order(publishedAt desc) {
+    const QUERY = `*[_type == "post"] | order(publishedAt desc) {
       title,
       slug,
       publishedAt,
@@ -54,11 +54,13 @@ async function loadPostsFromSanity() {
 
     const url = `https://${PROJECT_ID}.api.sanity.io/v2024-04-17/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
 
+    console.log("Fetching from:", url);
+
     const response = await fetch(url);
     const data = await response.json();
     const posts = data.result || [];
 
-    console.log("Sanity returned:", posts);
+    console.log("Sanity returned posts:", posts);
 
     if (posts.length === 0) {
       container.innerHTML = '<p>No posts yet. Create and publish some in Sanity Studio.</p>';
@@ -79,7 +81,7 @@ async function loadPostsFromSanity() {
 
   } catch (error) {
     console.error("Sanity fetch error:", error);
-    container.innerHTML = '<p>Could not load posts from Sanity. Please check your connection.</p>';
+    container.innerHTML = `<p>Could not load posts from Sanity.<br>Error: ${error.message}</p>`;
   }
 }
 
